@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: black;
+            color: #f1f1f1;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            
+        }
+
+        #telaInicial {
+            background-image: url('ilha (1).png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+
+        .tela:not(#telaInicial) {
+            background-color: black;
+        }
+
+        h1, h2 {
+            margin-bottom: 15px;
+        }
+
+        p{
+            font-size: 30px;
+        }
+        .neon{
+            color: #f7e4e3; 
+            text-shadow:
+            0 0 5px #ff0037,
+            0 0 10px #ff0037,
+            0 0 20px #ff0037,
+            0 0 40px #ff0037,
+            0 0 80px #ff0037;
+            font-family: "Quicksand", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: weight;
+            font-style: normal;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+        .tela {
+            margin-top: 60px;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        ul p {
+            margin: 8px 0;
+        }
+
+        button {
+            padding: 12px 25px;
+            margin: 10px;
+            background: #af4c4c;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            font-size: 25px;
+        }
+
+        button:hover {
+            background-color: #751c1c;
+            transform: translateY(-5px);
+        }
+
+        #entradaResposta input {
+            padding: 10px;
+            width: 220px;
+            height: 30px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+        }
+
+        #entradaResposta button {
+            background-color: #4caf50;
+        }
+
+        #entradaResposta button:hover {
+            background-color: #357a38;
+        }
+
+        #feedback {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="telaInicial" class="tela">
+        <h1 class="neon">Escape Room</h1>
+        <p>Você está preso em uma sala misteriosa! Resolva os enigmas para conseguir escapar.</p>
+        <button onclick="iniciarJogo()">Iniciar</button>
+    </div>
+
+    <div id="jogo" class="tela" style="display: none;">
+        <div id="descricao"></div>
+        <div id="opcoes"></div>
+        <div id="entradaResposta" style="display: none;">
+            <input type="text" id="respostaInput" placeholder="Digite sua resposta...">
+            <button onclick="enviarResposta()">Enviar</button>
+        </div>
+        <div id="feedback"></div>
+    </div>
+
+    <div id="final" class="tela" style="display: none;">
+        <h2>🎉 Parabéns!</h2>
+        <p>Você resolveu todos os enigmas e escapou da sala!</p>
+        <button onclick="location.reload()">Jogar Novamente 🔁</button>
+    </div>
+
+    <script>
+        let resolvidos = {
+            grampeador: false,
+            papeis: false,
+            almofada: false,
+            livro: false,
+            janela: false,
+            armario: false
+        };
+
+        let etapaAtual = '';
+
+        function iniciarJogo() {
+            document.getElementById('telaInicial').style.display = 'none';
+            document.getElementById('jogo').style.display = 'block';
+            menuPrincipal();
+        }
+
+        function menuPrincipal() {
+            etapaAtual = 'menu';
+            document.getElementById('feedback').innerText = '';
+            document.getElementById('entradaResposta').style.display = 'none';
+
+            document.getElementById('descricao').innerHTML = `
+                <h2 class="neon">Sala Misteriosa</h2>
+                <p>Ao seu redor, você vê:</p>
+                <ul>
+                    <p>1. Um grampeador velho</p>
+                    <p>2. Papeis amassados</p>
+                    <p>3. Uma almofada fora do lugar</p>
+                    <p>4. Um livro misterioso</p>
+                    <p>5. Uma janela embaçada</p>
+                    <p>6. Um armário com teclado numérico</p>
+                    <p>7. Tentar abrir a porta</p>
+                </ul>
+            `;
+
+            const opcoesHTML = `
+                <button onclick="escolher('1')">Investigar Grampeador</button>
+                <button onclick="escolher('2')">Investigar Papeis</button>
+                <button onclick="escolher('3')">Investigar Almofada</button>
+                <button onclick="escolher('4')">Investigar Livro</button>
+                <button onclick="escolher('5')">Investigar Janela</button>
+                <button onclick="escolher('6')">Investigar Armário</button>
+                <button onclick="escolher('7')">Tentar Abrir a Porta</button>
+            `;
+            document.getElementById('opcoes').innerHTML = opcoesHTML;
+        }
+
+        function escolher(opcao) {
+            switch (opcao) {
+                case '1': investigar('grampeador', "Sou cheia de buracos, mas seguro a água. O que sou?");   break;
+                case '2': investigar('papeis', "Qual palavra está sempre escrita errada no dicionário?"); break;
+                case '3': investigar('almofada', "Tenho teclas, mas não toco música. O que sou?"); break;
+                case '4': investigar('livro', "Quanto mais você tira de mim, maior eu fico. O que sou?"); break;
+                case '5': investigar('janela', "O que sobe mas nunca desce?"); break;
+                case '6': investigar('armario', "Tenho números, mas não sou calculadora. Tenho portas, mas não sou casa. O que sou?"); break;
+                case '7': verificarSaida(); break;
+            }
+        }
+
+        function investigar(objeto, pergunta) {
+            if (resolvidos[objeto]) {
+                document.getElementById('feedback').innerText = `Você já resolveu o enigma do ${objeto}.`;
+                return;
+            }
+            etapaAtual = objeto;
+            document.getElementById('descricao').innerHTML = `<p>${pergunta}</p>`;
+            document.getElementById('opcoes').innerHTML = '';
+            document.getElementById('entradaResposta').style.display = 'block';
+        }
+
+        function enviarResposta() {
+            const resposta = document.getElementById('respostaInput').value.trim().toLowerCase();
+            const respostasCertas = {
+                grampeador: "esponja",
+                papeis: "errada",
+                almofada: "teclado",
+                livro: "buraco",
+                janela: "idade",
+                armario: "armario"
+            };
+
+            if (resposta === respostasCertas[etapaAtual]) {
+                resolvidos[etapaAtual] = true;
+                document.getElementById('feedback').innerText = "✅ Resposta certa!";
+            } else {
+                document.getElementById('feedback').innerText = "❌ Resposta errada. Tente novamente.";
+                return;
+            }
+
+            document.getElementById('respostaInput').value = '';
+            setTimeout(menuPrincipal, 1000);
+        }
+
+        function verificarSaida() {
+            if (Object.values(resolvidos).every((v) => v)) {
+                document.getElementById('jogo').style.display = 'none';
+                document.getElementById('final').style.display = 'block';
+            } else {
+                document.getElementById('feedback').innerText = "A porta ainda está trancada. Resolva todos os enigmas antes!";
+            }
+        }
+    </script>
+</body>
+</html>
